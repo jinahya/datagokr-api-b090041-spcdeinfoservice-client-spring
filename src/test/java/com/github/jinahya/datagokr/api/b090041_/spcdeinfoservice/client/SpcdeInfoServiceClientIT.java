@@ -19,7 +19,7 @@ import java.time.Duration;
         }
 )
 @Slf4j
-class SpcdeInfoServiceClientIT extends AbstractSpcdeInfoServiceClientIT<SpcdeInfoServiceClient> {
+abstract class SpcdeInfoServiceClientIT extends AbstractSpcdeInfoServiceClientIT<SpcdeInfoServiceClient> {
 
     @Import(AbstractSpcdeInfoServiceClientIT._Configuration.class)
     @Configuration

@@ -1,5 +1,6 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client;
 
+import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.ApiDiscriminator;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Item;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Response;
 import lombok.AccessLevel;
@@ -109,6 +110,11 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     // -----------------------------------------------------------------------------------------------------------------
     @PostConstruct
     private void onPostConstruct() {
+        if (restTemplate == null) {
+            log.info("no rest template autowired. using default instance...");
+            restTemplate = new RestTemplate();
+            restTemplateRootUri = AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION;
+        }
         rootUri = restTemplate.getUriTemplateHandler().expand("/");
         if (restTemplateRootUri != null) {
             log.info("custom root uri specified: {}", restTemplateRootUri);
@@ -175,8 +181,9 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      */
     public @NotEmpty List<@Valid @NotNull Item> get24DivisionsInfo(
             @NotNull final Year solYear, @Nullable final Month solMonth) {
-        return get24DivisionsInfoForAllPages(solYear, solMonth)
-                .stream().flatMap(r -> r.getBody().getItems().stream())
+        return get24DivisionsInfoForAllPages(solYear, solMonth).stream()
+                .flatMap(r -> r.getBody().getItems().stream())
+                .peek(i -> i.setApiDiscriminator(ApiDiscriminator.GET_24_DIVISIONS_INFO))
                 .collect(toList());
     }
 
@@ -241,6 +248,7 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
                                                                    @Nullable final Month solMonth) {
         return getAnniversaryInfoForAllPages(solYear, solMonth)
                 .stream().flatMap(r -> r.getBody().getItems().stream())
+                .peek(i -> i.setApiDiscriminator(ApiDiscriminator.GET_ANNIVERSARY_INFO))
                 .collect(toList());
     }
 
@@ -304,7 +312,9 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     public @NotEmpty List<@Valid @NotNull Item> getHoliDeInfo(
             @NotNull final Year solYear, @Nullable final Month solMonth) {
         return getHoliDeInfoForAllPages(solYear, solMonth)
-                .stream().flatMap(r -> r.getBody().getItems().stream())
+                .stream()
+                .flatMap(r -> r.getBody().getItems().stream())
+                .peek(i -> i.setApiDiscriminator(ApiDiscriminator.GET_HOLI_DE_INFO))
                 .collect(toList());
     }
 
@@ -370,6 +380,7 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
         return getRestDeInfoForAllPages(solYear, solMonth)
                 .stream()
                 .flatMap(r -> r.getBody().getItems().stream())
+                .peek(i -> i.setApiDiscriminator(ApiDiscriminator.GET_REST_DE_INFO))
                 .collect(toList());
     }
 
@@ -434,6 +445,7 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
         return getSundryDayInfoForAllPages(solYear, solMonth)
                 .stream()
                 .flatMap(r -> r.getBody().getItems().stream())
+                .peek(i -> i.setApiDiscriminator(ApiDiscriminator.GET_SUNDRY_DAY_INFO))
                 .collect(toList());
     }
 
@@ -450,7 +462,7 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
 
     // ------------------------------------------------------------------------------------------------- instance fields
     @SpcdeInfoServiceRestTemplate
-    @Autowired
+    @Autowired(required = false)
     @Accessors(fluent = true)
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.PROTECTED)
@@ -463,7 +475,7 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     @Autowired(required = false)
     @Accessors(fluent = true)
     @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
+    @Getter(AccessLevel.PACKAGE)
     private String restTemplateRootUri;
 
     /**

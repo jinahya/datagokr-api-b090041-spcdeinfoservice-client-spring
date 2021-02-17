@@ -1,5 +1,6 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client;
 
+import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.ApiDiscriminator;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -29,8 +30,9 @@ class SpcdeInfoServiceReactiveClient_getRestDeInfo_IT extends SpcdeInfoServiceRe
                             .satisfies(d -> {
                                 assertThat(Year.from(d)).isEqualTo(solYear);
                                 assertThat(d.getMonth()).isSameAs(solMonth);
-                            })
-                    ;
+                            });
+                    assertThat(i.getIsHoliday()).isEqualTo(Boolean.TRUE);
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_REST_DE_INFO);
                 })
                 .blockLast();
     }
@@ -47,6 +49,8 @@ class SpcdeInfoServiceReactiveClient_getRestDeInfo_IT extends SpcdeInfoServiceRe
                             .satisfies(d -> {
                                 assertThat(Year.from(d)).isEqualTo(solYear);
                             });
+                    assertThat(i.getIsHoliday()).isEqualTo(Boolean.TRUE);
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_REST_DE_INFO);
                 })
                 .blockLast();
     }

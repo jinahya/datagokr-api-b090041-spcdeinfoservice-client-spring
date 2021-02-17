@@ -1,5 +1,6 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client;
 
+import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.ApiDiscriminator;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -33,10 +34,9 @@ class SpcdeInfoServiceClient_getSundryDayInfo_IT extends SpcdeInfoServiceClientI
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                         assertThat(d.getMonth()).isSameAs(solMonth);
-                    })
-                    ;
-                })
-        ;
+                    });
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_SUNDRY_DAY_INFO);
+                });
     }
 
     @EnabledIf("#{systemProperties['" + SYSTEM_PROPERTY_SERVICE_KEY + "'] != null}")
@@ -52,9 +52,8 @@ class SpcdeInfoServiceClient_getSundryDayInfo_IT extends SpcdeInfoServiceClientI
                 .allSatisfy(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
-                    })
-                    ;
-                })
-        ;
+                    });
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_SUNDRY_DAY_INFO);
+                });
     }
 }

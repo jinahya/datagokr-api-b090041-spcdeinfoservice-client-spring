@@ -1,5 +1,6 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client;
 
+import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.ApiDiscriminator;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Item;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Response;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Responses;
@@ -76,6 +77,17 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
         super();
     }
 
+    // -----------------------------------------------------------------------------------------------------------------
+    @Autowired
+    private void onPostConstruct() {
+        if (webClient == null) {
+            log.info("no web client autowired. using a default instance...");
+            webClient = WebClient.builder()
+                    .baseUrl(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
+                    .build();
+        }
+    }
+
     // --------------------------------------------------------------------------------------------- /get24DivisionsInfo
 
     /**
@@ -139,6 +151,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
     public @NotNull Flux<Item> get24DivisionsInfo(@NotNull final Year solYear, @Nullable final Month solMonth) {
         return get24DivisionsInfoForAllPages(solYear, solMonth)
                 .flatMap(r -> fromIterable(r.getBody().getItems()))
+                .doOnNext(i -> i.setApiDiscriminator(ApiDiscriminator.GET_24_DIVISIONS_INFO))
                 ;
     }
 
@@ -204,6 +217,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
     public @NotNull Flux<Item> getAnniversaryInfo(@NotNull final Year solYear, @Nullable final Month solMonth) {
         return getAnniversaryInfoForAllPages(solYear, solMonth)
                 .flatMap(r -> fromIterable(r.getBody().getItems()))
+                .doOnNext(i -> i.setApiDiscriminator(ApiDiscriminator.GET_ANNIVERSARY_INFO))
                 ;
     }
 
@@ -270,6 +284,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
     public @NotNull Flux<Item> getHoliDeInfo(@NotNull final Year solYear, @Nullable final Month solMonth) {
         return getHoliDeInfoForAllPages(solYear, solMonth)
                 .flatMap(r -> fromIterable(r.getBody().getItems()))
+                .doOnNext(i -> i.setApiDiscriminator(ApiDiscriminator.GET_HOLI_DE_INFO))
                 ;
     }
 
@@ -336,6 +351,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
     public @NotNull Flux<Item> getRestDeInfo(@NotNull final Year solYear, @Nullable final Month solMonth) {
         return getRestDeInfoForAllPages(solYear, solMonth)
                 .flatMap(r -> fromIterable(r.getBody().getItems()))
+                .doOnNext(i -> i.setApiDiscriminator(ApiDiscriminator.GET_REST_DE_INFO))
                 ;
     }
 
@@ -402,6 +418,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
     public @NotNull Flux<Item> getSundryDayInfo(@NotNull final Year solYear, @Nullable final Month solMonth) {
         return getSundryDayInfoForAllPages(solYear, solMonth)
                 .flatMap(r -> fromIterable(r.getBody().getItems()))
+                .doOnNext(i -> i.setApiDiscriminator(ApiDiscriminator.GET_SUNDRY_DAY_INFO))
                 ;
     }
 

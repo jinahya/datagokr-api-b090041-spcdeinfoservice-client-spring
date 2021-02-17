@@ -1,5 +1,6 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client;
 
+import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.ApiDiscriminator;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Item;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -34,10 +35,10 @@ class SpcdeInfoServiceClient_getRestDeInfo_IT extends SpcdeInfoServiceClientIT {
                             .satisfies(d -> {
                                 assertThat(Year.from(d)).isEqualTo(solYear);
                                 assertThat(d.getMonth()).isSameAs(solMonth);
-                            })
-                    ;
-                })
-        ;
+                            });
+                    assertThat(i.getIsHoliday()).isEqualTo(Boolean.TRUE);
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_REST_DE_INFO);
+                });
     }
 
     @EnabledIf("#{systemProperties['" + SYSTEM_PROPERTY_SERVICE_KEY + "'] != null}")
@@ -55,9 +56,9 @@ class SpcdeInfoServiceClient_getRestDeInfo_IT extends SpcdeInfoServiceClientIT {
                             .isNotNull()
                             .satisfies(d -> {
                                 assertThat(Year.from(d)).isEqualTo(solYear);
-                            })
-                    ;
-                })
-        ;
+                            });
+                    assertThat(i.getIsHoliday()).isEqualTo(Boolean.TRUE);
+                    assertThat(i.getApiDiscriminator()).isNotNull().isSameAs(ApiDiscriminator.GET_REST_DE_INFO);
+                });
     }
 }

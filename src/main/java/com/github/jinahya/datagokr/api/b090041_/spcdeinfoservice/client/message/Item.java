@@ -1,6 +1,7 @@
 package com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.adapter.HhMmLocaTimeAdapter;
 import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.adapter.UuuuMmDdLocalDateAdapter;
@@ -12,6 +13,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -23,6 +25,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -123,6 +126,8 @@ public class Item implements Serializable {
 
     // ------------------------------------------------------------------------------------------------------------- kst
 
+    // ------------------------------------------------------------------------------------------------ apiDiscriminator
+
     // ------------------------------------------------------------------------------------------------- instance fields
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonProperty(required = true)
@@ -144,8 +149,8 @@ public class Item implements Serializable {
     private Integer seq;
 
     @JsonProperty(required = true)
-    @Enumerated
     @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @Column(name = "date_kind", nullable = false)
     @NotNull
     @XmlSchemaType(name = "enumeration")
@@ -178,4 +183,12 @@ public class Item implements Serializable {
     @XmlSchemaType(name = "token")
     @XmlElement(required = true)
     private LocalTime kst;
+
+    // -----------------------------------------------------------------------------------------------------------------
+    @JsonIgnore
+    @XmlTransient
+    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "api_discriminator", nullable = false)
+    private ApiDiscriminator apiDiscriminator;
 }
