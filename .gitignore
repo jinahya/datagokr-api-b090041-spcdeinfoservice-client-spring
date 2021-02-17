@@ -1,3 +1,9 @@
+
+
+# Created by https://www.toptal.com/developers/gitignore/api/maven
+# Edit at https://www.toptal.com/developers/gitignore?templates=maven
+
+### Maven ###
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -9,3 +15,42 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+# End of https://www.toptal.com/developers/gitignore/api/maven
+
+
+.idea
+!.idea/codeStyles
+*.iml
+
+
+src/test/resources/failsafe.system.properties
+src/test/resources/surefire.system.properties
+
+
+# Created by https://www.toptal.com/developers/gitignore/api/microsoftoffice
+# Edit at https://www.toptal.com/developers/gitignore?templates=microsoftoffice
+
+### MicrosoftOffice ###
+*.tmp
+
+# Word temporary
+~$*.doc*
+
+# Word Auto Backup File
+Backup of *.doc*
+
+# Excel temporary
+~$*.xls*
+
+# Excel Backup File
+*.xlk
+
+# PowerPoint temporary
+~$*.ppt*
+
+# Visio autosave temporary files
+*.~vsd*
+
+# End of https://www.toptal.com/developers/gitignore/api/microsoftoffice
+
