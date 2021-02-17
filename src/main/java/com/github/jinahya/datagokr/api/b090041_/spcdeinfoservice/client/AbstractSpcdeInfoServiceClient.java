@@ -8,12 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
-import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
 
 /**
  * An abstract parent class for client classes.
@@ -81,45 +81,6 @@ public abstract class AbstractSpcdeInfoServiceClient {
     public static final String QUERY_PARAM_NAME_SOL_MONTH = "solMonth";
 
     /**
-     * A query parameter name for a solar day of month. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_SOL_DAY = "solDay";
-
-    /**
-     * A query parameter name for a lunar year. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_LUN_YEAR = "lunYear";
-
-    /**
-     * A query parameter name for a lunar month. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_LUN_MONTH = "lunMonth";
-
-    /**
-     * A query parameter name for a lunar day of month. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_LUN_DAY = "lunDay";
-
-    /**
-     * A query parameter name for the starting solar year. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_FROM_SOL_YEAR = "fromSolYear";
-
-    /**
-     * A query parameter name for the ending solar year. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_TO_SOL_YEAR = "toSolYear";
-
-    /**
-     * A query parameter name for the flag of leap month. The value is {@value}.
-     */
-    public static final String QUERY_PARAM_NAME_LEAP_MONTH = "leapMonth";
-
-//    static String queryParamValueLeapMonth(final boolean leapMonth) {
-//        return leapMonth ? Item.LEAP : Item.NORMAL;
-//    }
-
-    /**
      * A query parameter name for the page number. The value is {@value}.
      */
     public static final String QUERY_PARAM_NAME_PAGE_NO = "pageNo";
@@ -127,51 +88,9 @@ public abstract class AbstractSpcdeInfoServiceClient {
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * The formatter for {@code solYear} and {@code lunYear}.
-     */
-    public static final DateTimeFormatter YEAR_FORMATTER = DateTimeFormatter.ofPattern("uuuu");
-
-    /**
-     * The formatter for {@code solMonth} and {@code lunMonth}.
+     * The formatter for {@link #QUERY_PARAM_NAME_SOL_MONTH}.
      */
     public static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MM");
-
-    /**
-     * The formatter for {@code solMonth} and {@code lunMonth}.
-     */
-    public static final DateTimeFormatter DAY_FORMATTER = DateTimeFormatter.ofPattern("dd");
-
-    /**
-     * A formatter for formatting {@link java.time.temporal.ChronoField#DAY_OF_WEEK} with {@link Locale#KOREAN KOREAN}
-     * locale.
-     */
-    static final DateTimeFormatter WEEK_FORMATTER = DateTimeFormatter.ofPattern("E", Locale.KOREAN);
-
-    /**
-     * Formats specified day-of-month value as {@code %02d}.
-     *
-     * @param dayOfMonth the value to format.
-     * @return a formatted string.
-     */
-    public static String formatDay(final int dayOfMonth) {
-        return format02d(dayOfMonth);
-    }
-
-    /**
-     * Formats specified as {@code %02d}.
-     *
-     * @param parsed the value to format.
-     * @return a formatted string.
-     */
-    static String format02d(final Integer parsed) {
-        return ofNullable(parsed).map(v -> format("%1$02d", v)).orElse(null);
-    }
-
-    // TODO: Remove, unused.
-    @Deprecated
-    static Integer parse02d(final String formatted) {
-        return ofNullable(formatted).map(Integer::parseInt).orElse(null);
-    }
 
     // -------------------------------------------------------------------------------------------- injection qualifiers
 

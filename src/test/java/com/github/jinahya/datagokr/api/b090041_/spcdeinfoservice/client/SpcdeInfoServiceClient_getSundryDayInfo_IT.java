@@ -4,11 +4,12 @@ import com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import java.time.Month;
 import java.time.Year;
-import java.time.YearMonth;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,15 +19,15 @@ class SpcdeInfoServiceClient_getSundryDayInfo_IT extends SpcdeInfoServiceClientI
 
     @EnabledIf("#{systemProperties['" + SYSTEM_PROPERTY_SERVICE_KEY + "'] != null}")
     @DisplayName("getSundryDayInfo(solYear, solMonth)")
-    @Test
-    void getSundryDayInfo__YearMonth() {
-        final YearMonth yearMonth = YearMonth.now();
-        final Year solYear = Year.from(yearMonth);
-        final Month solMonth = yearMonth.getMonth();
+    @ParameterizedTest
+    @EnumSource(Month.class)
+    @SuppressWarnings({"java:S5841"})
+    void getSundryDayInfo__YearMonth(final Month solMonth) {
+        final Year solYear = Year.now();
         final List<Item> items = clientInstance().getSundryDayInfo(solYear, solMonth);
         assertThat(items)
                 .isNotNull()
-//                .isNotEmpty()
+//                .isNotEmpty() // 특정 월에 없을 수도 있다.
                 .doesNotContainNull()
                 .allSatisfy(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {

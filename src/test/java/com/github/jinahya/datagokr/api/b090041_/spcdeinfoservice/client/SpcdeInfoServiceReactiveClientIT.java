@@ -87,8 +87,7 @@ abstract class SpcdeInfoServiceReactiveClientIT
         @Bean
         WebClient spcdeInfoServiceWebClient(
                 @SpcdeInfoServiceReactiveClient.SpcdeInfoServiceWebClient final ClientHttpConnector clientConnector,
-                @SpcdeInfoServiceReactiveClient.SpcdeInfoServiceWebClient
-                final ExchangeStrategies exchangeStrategies) {
+                @SpcdeInfoServiceReactiveClient.SpcdeInfoServiceWebClient final ExchangeStrategies exchangeStrategies) {
             return WebClient.builder()
                     .clientConnector(clientConnector)
                     .exchangeStrategies(exchangeStrategies)

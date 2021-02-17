@@ -24,18 +24,20 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.URI;
 import java.time.Month;
 import java.time.Year;
-import java.time.YearMonth;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import static com.github.jinahya.datagokr.api.b090041_.spcdeinfoservice.client.message.Responses.requireResultSuccessful;
 import static java.util.Optional.ofNullable;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -120,17 +122,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Retrieves a response from {@code /get24DivisionsInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
-     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
+     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}; {@code null} for the first page.
      * @return the response.
      */
     public @Valid @NotNull Response get24DivisionsInfo(
-            @NotNull final Year solYear, @NotNull final Month solMonth, @Positive @Nullable final Integer pageNo) {
+            @NotNull final Year solYear, @Nullable final Month solMonth, @Positive @Nullable final Integer pageNo) {
         final UriComponentsBuilder builder = uriBuilderFromRootUri()
                 .pathSegment(PATH_SEGMENT_GET_24_DIVISIONS_INFO)
                 .queryParam(QUERY_PARAM_NAME_SERVICE_KEY, serviceKey())
-                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear)
-                .queryParam(QUERY_PARAM_NAME_SOL_MONTH, MONTH_FORMATTER.format(solMonth));
+                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear);
+        ofNullable(solMonth)
+                .map(MONTH_FORMATTER::format)
+                .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_SOL_MONTH, v));
         ofNullable(pageNo)
                 .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_PAGE_NO, v));
         final URI url = builder
@@ -141,15 +145,15 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Reads all responses from {@code /get24DivisionsInfo} with specified arguments.
+     * Reads all responses of all pages from {@code /get24DivisionsInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of responses.
      * @see #get24DivisionsInfo(Year, Month, Integer)
      */
     public @NotNull List<@Valid @NotNull Response> get24DivisionsInfoForAllPages(
-            @NotNull final Year solYear, @NotNull final Month solMonth) {
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         final List<Response> result = new ArrayList<>();
         for (int pageNo = 1; ; pageNo++) {
             final Response response = get24DivisionsInfo(solYear, solMonth, pageNo);
@@ -164,49 +168,17 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     /**
      * Reads all items from {@code /get24DivisionsInfo} for specified month in solar.
      *
-     * @param solarYearMonth the solar month from which {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear} and {@link
-     *                       #QUERY_PARAM_NAME_SOL_MONTH ?solMonth} are derived.
+     * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of items.
-     * @see #get24DivisionsInfo(Year, Month, Integer)
+     * @see #get24DivisionsInfoForAllPages(Year, Month)
      */
-    public @NotEmpty List<@Valid @NotNull Item> get24DivisionsInfo(@NotNull final YearMonth solarYearMonth) {
-        final Year solYear = Year.from(solarYearMonth);
-        final Month solMonth = Month.from(solarYearMonth);
+    public @NotEmpty List<@Valid @NotNull Item> get24DivisionsInfo(
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         return get24DivisionsInfoForAllPages(solYear, solMonth)
                 .stream().flatMap(r -> r.getBody().getItems().stream())
                 .collect(toList());
     }
-
-    /**
-     * Reads all items for specified solar year.
-     *
-     * @param year       the solar year.
-     * @param executor   an executor for concurrently execute {@link #get24DivisionsInfo(YearMonth)} for each {@link
-     *                   Month} in {@code year}.
-     * @param collection a collection to which retrieved items are added.
-     * @param <T>        collection type parameter
-     * @return given {@code collection}.
-     * @see #get24DivisionsInfo(YearMonth)
-     */
-    @NotEmpty
-    public <T extends Collection<? super Item>> T get24DivisionsInfo(
-            @NotNull final Year year, @NotNull final Executor executor, @NotNull final T collection) {
-        Arrays.stream(Month.values())
-                .map(v -> YearMonth.of(year.getValue(), v))
-                .map(v -> supplyAsync(() -> get24DivisionsInfo(v), executor))
-                .map(f -> {
-                    try {
-                        return f.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException(e);
-                    }
-                })
-                .forEach(collection::addAll)
-        ;
-        return collection;
-    }
-
 
     // --------------------------------------------------------------------------------------------- /getAnniversaryInfo
 
@@ -214,17 +186,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Retrieves a response from {@code /getAnniversaryInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
-     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
+     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}; {@code null} for the first page.
      * @return the response.
      */
     public @Valid @NotNull Response getAnniversaryInfo(
-            @NotNull final Year solYear, @NotNull final Month solMonth, @Positive @Nullable final Integer pageNo) {
+            @NotNull final Year solYear, @Nullable final Month solMonth, @Positive @Nullable final Integer pageNo) {
         final UriComponentsBuilder builder = uriBuilderFromRootUri()
                 .pathSegment(PATH_SEGMENT_GET_ANNIVERSARY_INFO)
                 .queryParam(QUERY_PARAM_NAME_SERVICE_KEY, serviceKey())
-                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear)
-                .queryParam(QUERY_PARAM_NAME_SOL_MONTH, MONTH_FORMATTER.format(solMonth));
+                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear);
+        ofNullable(solMonth)
+                .map(MONTH_FORMATTER::format)
+                .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_SOL_MONTH, v));
         ofNullable(pageNo)
                 .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_PAGE_NO, v));
         final URI url = builder
@@ -238,12 +212,12 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Reads all responses from {@code /getAnniversaryInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of responses.
-     * @see #getAnniversaryInfo(Year, Month, Integer)
+     * @see #getAnniversaryInfoForAllPages(Year, Month)
      */
     public @NotNull List<@Valid @NotNull Response> getAnniversaryInfoForAllPages(
-            @NotNull final Year solYear, @NotNull final Month solMonth) {
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         final List<Response> result = new ArrayList<>();
         for (int pageNo = 1; ; pageNo++) {
             final Response response = getAnniversaryInfo(solYear, solMonth, pageNo);
@@ -256,51 +230,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Reads all items from {@code /getAnniversaryInfo} for specified month in solar.
+     * Reads all items from {@code /getAnniversaryInfo} for specified year and month.
      *
-     * @param solarYearMonth the solar month from which {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear} and {@link
-     *                       #QUERY_PARAM_NAME_SOL_MONTH ?solMonth} are derived.
+     * @param solYear  the year for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth the month for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of items.
-     * @see #getAnniversaryInfo(Year, Month, Integer)
+     * @see #getAnniversaryInfoForAllPages(Year, Month)
      */
-    public @NotEmpty List<@Valid @NotNull Item> getAnniversaryInfo(@NotNull final YearMonth solarYearMonth) {
-        final Year solYear = Year.from(solarYearMonth);
-        final Month solMonth = Month.from(solarYearMonth);
+    public @NotEmpty List<@Valid @NotNull Item> getAnniversaryInfo(@NotNull final Year solYear,
+                                                                   @Nullable final Month solMonth) {
         return getAnniversaryInfoForAllPages(solYear, solMonth)
                 .stream().flatMap(r -> r.getBody().getItems().stream())
                 .collect(toList());
     }
-
-    /**
-     * Reads all items for specified solar year.
-     *
-     * @param year       the solar year.
-     * @param executor   an executor for concurrently execute {@link #getAnniversaryInfo(YearMonth)} for each {@link
-     *                   Month} in {@code year}.
-     * @param collection a collection to which retrieved items are added.
-     * @param <T>        collection type parameter
-     * @return given {@code collection}.
-     * @see #getAnniversaryInfo(YearMonth)
-     */
-    @NotEmpty
-    public <T extends Collection<? super Item>> T getAnniversaryInfo(
-            @NotNull final Year year, @NotNull final Executor executor, @NotNull final T collection) {
-        Arrays.stream(Month.values())
-                .map(v -> YearMonth.of(year.getValue(), v))
-                .map(v -> supplyAsync(() -> getAnniversaryInfo(v), executor))
-                .map(f -> {
-                    try {
-                        return f.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException(e);
-                    }
-                })
-                .forEach(collection::addAll)
-        ;
-        return collection;
-    }
-
 
     // -------------------------------------------------------------------------------------------------- /getHoliDeInfo
 
@@ -308,17 +250,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Retrieves a response from {@code /getHoliDeInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
-     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
+     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}; {@code null} for the first page.
      * @return the response.
      */
     public @Valid @NotNull Response getHoliDeInfo(
-            @NotNull final Year solYear, @NotNull final Month solMonth, @Positive @Nullable final Integer pageNo) {
+            @NotNull final Year solYear, @Nullable final Month solMonth, @Positive @Nullable final Integer pageNo) {
         final UriComponentsBuilder builder = uriBuilderFromRootUri()
                 .pathSegment(PATH_SEGMENT_GET_HOLI_DE_INFO)
                 .queryParam(QUERY_PARAM_NAME_SERVICE_KEY, serviceKey())
-                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear)
-                .queryParam(QUERY_PARAM_NAME_SOL_MONTH, MONTH_FORMATTER.format(solMonth));
+                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear);
+        ofNullable(solMonth)
+                .map(MONTH_FORMATTER::format)
+                .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_SOL_MONTH, v));
         ofNullable(pageNo)
                 .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_PAGE_NO, v));
         final URI url = builder
@@ -329,15 +273,15 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Reads all responses from {@code /getHoliDeInfo} with specified arguments.
+     * Reads all responses of all pages from {@code /getHoliDeInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of responses.
      * @see #getHoliDeInfo(Year, Month, Integer)
      */
     public @NotNull List<@Valid @NotNull Response> getHoliDeInfoForAllPages(
-            @NotNull final Year solYear, @NotNull final Month solMonth) {
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         final List<Response> result = new ArrayList<>();
         for (int pageNo = 1; ; pageNo++) {
             final Response response = getHoliDeInfo(solYear, solMonth, pageNo);
@@ -350,51 +294,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Reads all items from {@code /getHoliDeInfo} for specified month in solar.
+     * Reads all items from {@code /getHoliDeInfo} for specified year and month.
      *
-     * @param solarYearMonth the solar month from which {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear} and {@link
-     *                       #QUERY_PARAM_NAME_SOL_MONTH ?solMonth} are derived.
+     * @param solYear  the year for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth the month for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of items.
      * @see #getHoliDeInfo(Year, Month, Integer)
      */
-    public @NotEmpty List<@Valid @NotNull Item> getHoliDeInfo(@NotNull final YearMonth solarYearMonth) {
-        final Year solYear = Year.from(solarYearMonth);
-        final Month solMonth = Month.from(solarYearMonth);
+    public @NotEmpty List<@Valid @NotNull Item> getHoliDeInfo(
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         return getHoliDeInfoForAllPages(solYear, solMonth)
                 .stream().flatMap(r -> r.getBody().getItems().stream())
                 .collect(toList());
     }
-
-    /**
-     * Reads all items for specified solar year.
-     *
-     * @param year       the solar year.
-     * @param executor   an executor for concurrently execute {@link #getHoliDeInfo(YearMonth)} for each {@link Month}
-     *                   in {@code year}.
-     * @param collection a collection to which retrieved items are added.
-     * @param <T>        collection type parameter
-     * @return given {@code collection}.
-     * @see #getHoliDeInfo(YearMonth)
-     */
-    @NotEmpty
-    public <T extends Collection<? super Item>> T getHoliDeInfo(
-            @NotNull final Year year, @NotNull final Executor executor, @NotNull final T collection) {
-        Arrays.stream(Month.values())
-                .map(v -> YearMonth.of(year.getValue(), v))
-                .map(v -> supplyAsync(() -> getHoliDeInfo(v), executor))
-                .map(f -> {
-                    try {
-                        return f.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException(e);
-                    }
-                })
-                .forEach(collection::addAll)
-        ;
-        return collection;
-    }
-
 
     // -------------------------------------------------------------------------------------------------- /getRestDeInfo
 
@@ -402,20 +314,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Retrieves a response from {@code /getRestDeInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
-     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
+     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}; {@code null} for the first page.
      * @return the response.
-     * @see #getRestDeInfoForAllPages(Year, Month)
-     * @see #getRestDeInfo(YearMonth)
-     * @see #getRestDeInfo(Year, Executor, Collection)
      */
     public @NotNull Response getRestDeInfo(
-            @NotNull final Year solYear, @NotNull final Month solMonth, @Positive @Nullable final Integer pageNo) {
+            @NotNull final Year solYear, @Nullable final Month solMonth, @Positive @Nullable final Integer pageNo) {
         final UriComponentsBuilder builder = uriBuilderFromRootUri()
                 .pathSegment(PATH_SEGMENT_GET_REST_DE_INFO)
                 .queryParam(QUERY_PARAM_NAME_SERVICE_KEY, serviceKey())
-                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear)
-                .queryParam(QUERY_PARAM_NAME_SOL_MONTH, MONTH_FORMATTER.format(solMonth));
+                .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear);
+        ofNullable(solMonth)
+                .map(MONTH_FORMATTER::format)
+                .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_SOL_MONTH, v));
         ofNullable(pageNo)
                 .ifPresent(v -> builder.queryParam(QUERY_PARAM_NAME_PAGE_NO, v));
         final URI url = builder
@@ -426,17 +337,15 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Reads all responses from {@code /getRestDeInfo} with specified arguments.
+     * Reads all responses of all pages from {@code /getRestDeInfo} with specified arguments.
      *
-     * @param solYear  a value for {@link #QUERY_PARAM_NAME_LUN_YEAR ?lunYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_LUN_MONTH ?lunMonth}.
+     * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of responses.
      * @see #getRestDeInfo(Year, Month, Integer)
-     * @see #getRestDeInfo(YearMonth)
-     * @see #getRestDeInfo(Year, Executor, Collection)
      */
     public @NotNull List<@Valid @NotNull Response> getRestDeInfoForAllPages(
-            @NotNull final Year solYear, @NotNull final Month solMonth) {
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         final List<Response> responses = new ArrayList<>();
         for (int pageNo = 1; ; pageNo++) {
             final Response response = getRestDeInfo(solYear, solMonth, pageNo);
@@ -449,53 +358,19 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     }
 
     /**
-     * Retrieves all items from {@code /getRestDeInfo} with parameters derived from specified month in lunar calendar.
+     * Retrieves all items from {@code /getRestDeInfo} for specified year and month.
      *
-     * @param yearMonth the year-month from which {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear} and {@link
-     *                  #QUERY_PARAM_NAME_SOL_MONTH ?solMonth} are derived.
+     * @param solYear  the year for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth the month for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of items.
-     * @see #getRestDeInfo(Year, Month, Integer)
      * @see #getRestDeInfoForAllPages(Year, Month)
-     * @see #getRestDeInfo(Year, Executor, Collection)
      */
-    public @NotEmpty List<@Valid @NotNull Item> getRestDeInfo(@NotNull final YearMonth yearMonth) {
-        final Year solYear = Year.from(yearMonth);
-        final Month solMonth = Month.from(yearMonth);
+    public @NotEmpty List<@Valid @NotNull Item> getRestDeInfo(
+            @NotNull final Year solYear, @Nullable final Month solMonth) {
         return getRestDeInfoForAllPages(solYear, solMonth)
                 .stream()
                 .flatMap(r -> r.getBody().getItems().stream())
                 .collect(toList());
-    }
-
-    /**
-     * Reads all items for specified year and adds them to specified collection.
-     *
-     * @param year       the lunar year.
-     * @param executor   an executor for concurrently executing {@link #getRestDeInfo(YearMonth)} for each {@link Month}
-     *                   in {@code year}.
-     * @param collection the collection to which retrieved items are added.
-     * @param <T>        collection type parameter
-     * @return given {@code collection}.
-     * @see #getRestDeInfoForAllPages(Year, Month)
-     * @see #getRestDeInfo(YearMonth)
-     */
-    @NotEmpty
-    public <T extends Collection<? super Item>> T getRestDeInfo(
-            @NotNull final Year year, @NotNull final Executor executor, @NotNull final T collection) {
-        Arrays.stream(Month.values())
-                .map(v -> YearMonth.of(year.getValue(), v))
-                .map(v -> supplyAsync(() -> getRestDeInfo(v), executor))
-                .map(f -> {
-                    try {
-                        return f.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException(e);
-                    }
-                })
-                .forEach(collection::addAll)
-        ;
-        return collection;
     }
 
     // ----------------------------------------------------------------------------------------------- /getSundryDayInfo
@@ -504,8 +379,8 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
      * Retrieves a response from {@code /getSundryDayInfo} with specified arguments.
      *
      * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}.
-     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
+     * @param pageNo   a value for {@link #QUERY_PARAM_NAME_PAGE_NO ?pageNo}; {@code null} for the first page.
      * @return the response.
      */
     public @Valid @NotNull Response getSundryDayInfo(
@@ -529,8 +404,8 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     /**
      * Reads all responses from {@code /getSundryDayInfo} with specified arguments.
      *
-     * @param solYear  a value for {@link #QUERY_PARAM_NAME_FROM_SOL_YEAR ?fromSolYear}.
-     * @param solMonth a value for {@link #QUERY_PARAM_NAME_LUN_MONTH ?lunMonth}.
+     * @param solYear  a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
+     * @param solMonth a value for {@link #QUERY_PARAM_NAME_SOL_MONTH ?solMonth}; {@code null} for a whole year.
      * @return a list of responses.
      */
     public @NotNull List<@Valid @NotNull Response> getSundryDayInfoForAllPages(
@@ -557,20 +432,6 @@ public class SpcdeInfoServiceClient extends AbstractSpcdeInfoServiceClient {
     public @NotNull List<@Valid @NotNull Item> getSundryDayInfo(
             @NotNull final Year solYear, @Nullable final Month solMonth) {
         return getSundryDayInfoForAllPages(solYear, solMonth)
-                .stream()
-                .flatMap(r -> r.getBody().getItems().stream())
-                .collect(toList());
-    }
-
-    /**
-     * Reads all items from {@code /getSundryDayInfo} with specified arguments.
-     *
-     * @param year a value for {@link #QUERY_PARAM_NAME_SOL_YEAR ?solYear}.
-     * @return a list of items.
-     * @see #getSundryDayInfoForAllPages(Year, Month)
-     */
-    public @NotNull List<@Valid @NotNull Item> getSundryDayInfo(@NotNull final Year year) {
-        return getSundryDayInfoForAllPages(year, null)
                 .stream()
                 .flatMap(r -> r.getBody().getItems().stream())
                 .collect(toList());

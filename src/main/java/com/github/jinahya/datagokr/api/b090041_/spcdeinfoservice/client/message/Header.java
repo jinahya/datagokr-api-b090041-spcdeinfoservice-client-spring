@@ -81,6 +81,9 @@ public class Header implements Serializable {
     @JsonIgnore
     @XmlTransient
     public boolean isResultCodeSuccess() {
+        if (resultCode == null) {
+            return true;
+        }
         return RESULT_CODE_SUCCESS.equals(resultCode);
     }
 

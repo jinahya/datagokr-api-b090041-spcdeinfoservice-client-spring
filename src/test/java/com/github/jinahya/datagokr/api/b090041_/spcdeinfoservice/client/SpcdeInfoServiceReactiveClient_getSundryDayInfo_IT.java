@@ -10,7 +10,6 @@ import org.springframework.test.context.junit.jupiter.EnabledIf;
 
 import java.time.Month;
 import java.time.Year;
-import java.time.YearMonth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,17 +21,17 @@ class SpcdeInfoServiceReactiveClient_getSundryDayInfo_IT extends SpcdeInfoServic
     @EnumSource(Month.class)
     @ParameterizedTest
     void getSundryDayInfo_Expected_YearMonth(final Month solMonth) {
-        final YearMonth yearMonth = YearMonth.now();
-        final Year solYear = Year.from(yearMonth);
+        final Year solYear = Year.now();
         final Item last = clientInstance().getSundryDayInfo(solYear, solMonth)
                 .doOnNext(i -> {
-                    assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
-                        assertThat(Year.from(d)).isEqualTo(solYear);
-                        assertThat(d.getMonth()).isSameAs(solMonth);
-                    });
+                    assertThat(i.getLocdate())
+                            .isNotNull()
+                            .satisfies(d -> {
+                                assertThat(Year.from(d)).isEqualTo(solYear);
+                                assertThat(d.getMonth()).isSameAs(solMonth);
+                            });
                 })
-                .blockLast()
-                ;
+                .blockLast();
     }
 
     @EnabledIf("#{systemProperties['" + SYSTEM_PROPERTY_SERVICE_KEY + "'] != null}")
@@ -42,11 +41,12 @@ class SpcdeInfoServiceReactiveClient_getSundryDayInfo_IT extends SpcdeInfoServic
         final Year solYear = Year.now();
         final Item last = clientInstance().getSundryDayInfo(solYear, null)
                 .doOnNext(i -> {
-                    assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
-                        assertThat(Year.from(d)).isEqualTo(solYear);
-                    });
+                    assertThat(i.getLocdate())
+                            .isNotNull()
+                            .satisfies(d -> {
+                                assertThat(Year.from(d)).isEqualTo(solYear);
+                            });
                 })
-                .blockLast()
-                ;
+                .blockLast();
     }
 }

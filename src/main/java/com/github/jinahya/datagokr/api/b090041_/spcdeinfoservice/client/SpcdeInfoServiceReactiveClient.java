@@ -20,7 +20,11 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.lang.annotation.*;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.time.Month;
 import java.time.Year;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -155,8 +159,7 @@ public class SpcdeInfoServiceReactiveClient extends AbstractSpcdeInfoServiceClie
                 .uri(b -> {
                     b.pathSegment(PATH_SEGMENT_GET_ANNIVERSARY_INFO)
                             .queryParam(QUERY_PARAM_NAME_SERVICE_KEY, serviceKey())
-                            .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear)
-                    ;
+                            .queryParam(QUERY_PARAM_NAME_SOL_YEAR, solYear);
                     ofNullable(solMonth)
                             .map(MONTH_FORMATTER::format)
                             .ifPresent(v -> b.queryParam(QUERY_PARAM_NAME_SOL_MONTH, v));

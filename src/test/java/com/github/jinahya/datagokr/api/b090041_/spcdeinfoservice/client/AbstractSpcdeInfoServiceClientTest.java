@@ -34,5 +34,8 @@ abstract class AbstractSpcdeInfoServiceClientTest<T extends AbstractSpcdeInfoSer
         }
     }
 
+    /**
+     * The clint class to test.
+     */
     protected final Class<T> clientClass;
 }

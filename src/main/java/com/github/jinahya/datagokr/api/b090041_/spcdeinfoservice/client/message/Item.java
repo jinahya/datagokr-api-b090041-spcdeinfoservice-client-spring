@@ -71,7 +71,7 @@ public class Item implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         final Item that = (Item) obj;
@@ -152,7 +152,7 @@ public class Item implements Serializable {
     @XmlElement(required = true)
     private String dateName;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm::ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     @JsonProperty(required = true)
     @Nullable
     @XmlJavaTypeAdapter(HhMmLocaTimeAdapter.class)

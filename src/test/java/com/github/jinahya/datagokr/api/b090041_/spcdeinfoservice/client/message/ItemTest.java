@@ -6,7 +6,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.time.temporal.JulianFields;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
