@@ -15,8 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class Response_Json_Test {
 
-    static Stream<Response> responses() {
-        return ResponseTest.responses();
+    private static Stream<Response> responses() {
+        return ResponseResources.responses();
     }
 
     @MethodSource({"responses"})

@@ -10,6 +10,11 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -32,6 +37,7 @@ import static java.util.Comparator.comparing;
  *
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
+@MappedSuperclass
 @XmlAccessorType(XmlAccessType.FIELD)
 @Setter
 @Getter
@@ -120,6 +126,7 @@ public class Item implements Serializable {
     // ------------------------------------------------------------------------------------------------- instance fields
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @JsonProperty(required = true)
+    @Id
     @NotNull
     @XmlJavaTypeAdapter(UuuuMmDdLocalDateAdapter.class)
     @XmlSchemaType(name = "unsignedShort")
@@ -127,19 +134,27 @@ public class Item implements Serializable {
     private LocalDate locdate;
 
     @JsonProperty(required = true)
+    @Id
+    @Basic(optional = false)
+    @Column(name = "seq", nullable = false)
     @Positive
     @NotNull
     @XmlSchemaType(name = "positiveInteger")
     @XmlElement(required = true)
-    private Long seq;
+    private Integer seq;
 
     @JsonProperty(required = true)
+    @Enumerated
+    @Basic(optional = false)
+    @Column(name = "date_kind", nullable = false)
     @NotNull
     @XmlSchemaType(name = "enumeration")
     @XmlElement(required = true)
     private DateKind dateKind;
 
     @JsonProperty(required = true)
+    @Basic(optional = false)
+    @Column(name = "is_holiday", nullable = false)
     @NotNull
     @XmlJavaTypeAdapter(YnBooleanAdapter.class)
     @XmlSchemaType(name = "token")
@@ -147,6 +162,8 @@ public class Item implements Serializable {
     private Boolean isHoliday;
 
     @JsonProperty(required = true)
+    @Basic(optional = false)
+    @Column(name = "date_name", nullable = false)
     @NotBlank
     @XmlSchemaType(name = "token")
     @XmlElement(required = true)
@@ -154,6 +171,8 @@ public class Item implements Serializable {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
     @JsonProperty(required = true)
+    @Basic
+    @Column(name = "kst")
     @Nullable
     @XmlJavaTypeAdapter(HhMmLocaTimeAdapter.class)
     @XmlSchemaType(name = "token")

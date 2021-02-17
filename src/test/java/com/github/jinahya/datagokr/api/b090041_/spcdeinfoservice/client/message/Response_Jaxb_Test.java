@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @Slf4j
@@ -22,10 +23,11 @@ class Response_Jaxb_Test {
     @Test
     void _Schema_() throws JAXBException, IOException {
         final JAXBContext context = JAXBContext.newInstance(Response.class);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         context.generateSchema(new SchemaOutputResolver() {
             @Override
             public Result createOutput(final String namespaceUri, final String suggestedFileName) throws IOException {
-                return new StreamResult(System.out) {
+                return new StreamResult(baos) {
                     @Override
                     public String getSystemId() {
                         return "noid";
@@ -33,5 +35,6 @@ class Response_Jaxb_Test {
                 };
             }
         });
+        System.out.println(baos.toString());
     }
 }

@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Response_Xml_Test {
 
     static Stream<Response> responses() {
-        return ResponseTest.responses();
+        return ResponseResources.responses();
     }
 
     @MethodSource({"responses"})

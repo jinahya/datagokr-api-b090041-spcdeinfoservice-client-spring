@@ -13,8 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 class ItemTest {
 
-    static Stream<Item> items() {
-        return ResponseTest.responses().flatMap(r -> r.getBody().getItems().stream());
+    private static Stream<Item> items() {
+        return ItemResources.items();
     }
 
     public ItemTest() {
@@ -27,14 +27,6 @@ class ItemTest {
     void _Valid_(final Item item) {
         assertThat(validator.validate(item)).isEmpty();
     }
-
-//    @ParameterizedTest
-//    @MethodSource({"items"})
-//    void getSolJd_Equals_SolarDateJulianDay(final Item item) {
-//        assertThat(item.getSolJd())
-//                .isNotNull()
-//                .isEqualTo(item.getSolarDate().getLong(JulianFields.JULIAN_DAY));
-//    }
 
     private final Validator validator;
 }

@@ -7,7 +7,8 @@
 
 A client library for accessing http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService.
 
-See [특일 정보 (data.go.kr)](https://www.data.go.kr/data/15012690/openapi.do).
+See [특일정보(공공데이터포털)](https://www.data.go.kr/data/15012690/openapi.do)
+and/or [달력자료(한국천문연구원)](https://astro.kasi.re.kr/life/post/calendarData).
 
 ## Verify
 
@@ -23,16 +24,16 @@ $ mvn -Pfailsafe -DservcieKey=... clean verify
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
-|`@SpcdeInfoServiceServiceKey`|`java.lang.String`|Provided by the service provider|
+|`@SpcdeInfoServiceServiceKey`|`String`|Provided by the service provider|
 
-### For `RestTemplate`
+### For `SpcdeInfoServiceClient` with `RestTemplate`
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
 |`@SpcdeInfoServiceRestTemplate`|[`RestTemplate`][RestTemplate]||
-|`@SpcdeInfoServiceRestTemplateRootUri`|`j.l.String`|Optional|
+|`@SpcdeInfoServiceRestTemplateRootUri`|`String`|Optional|
 
-### For `WebClient`
+### For `SpcdeInfoServiceReactiveClient` with `WebClient`
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
@@ -59,64 +60,65 @@ Provide the service key assigned by the service provider. Note that the service 
 value. You should use a URL-decoded value.
 
 ```java
-@AbstractSpcdeInfoServiceClient.SpcdeInfoServiceServiceKey
+@SpcdeInfoServiceServiceKey
 @Bean
 String spcdeInfoServiceServiceKey(){
-    // The service key assigned by data.go.kr
-    // Might be already URL-encoded
-    // Use a URL-decoded value    
-    // return "...%3D%3D"; (X)
-    // return "...==";     (O)
-}
+        // The service key assigned by data.go.kr
+        // Might be already URL-encoded
+        // Use a URL-decoded value    
+        // return "...%3D%3D"; (X)
+        // return "...==";     (O)
+        }
 ```
 
-### Using `RestTeamplate`
+### Using `SpcdeInfoServiceClient` with `RestTeamplate`
 
-Provide an instance of `RestTemplate`.
+Provide an instance of `RestTemplate` qualified with `@SpcdeInfoServiceRestTemplate`.
 
 ```java
 @SpcdeInfoServiceRestTemplate
 @Bean
-RestTemplate spcdeInfoServiceRestTemplate() {
-    return new RestTemplateBuilder()
-            ...
-            .rootUri(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
-            .build();
-}
+RestTemplate spcdeInfoServiceRestTemplate(){
+        return new RestTemplateBuilder()
+        ...
+        .rootUri(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+        .build();
+        }
 ```
 
-Get `@Autowired` with an instance of `SpcdeInfoServiceClient` which is internally get autowired with
-the `RestTemplate` instance.
+Get `@Autowired` with an instance of `SpcdeInfoServiceClient` which is internally get autowired with the `RestTemplate`
+instance.
 
 ```java
 @Autowired
 private SpcdeInfoServiceClient client;
 ```
 
-### Using `WebClient`
+### Using `SpcdeInfoServiceReactiveClient` with `WebClient`
 
-Provide an instance of `WebClient`.
+Provide an instance of `WebClient` qualified with `@SpcdeInfoServiceWebClient`.
 
 ```java
 @SpcdeInfoServiceWebClient
 @Bean
-WebClient spcdeInfoServiceWebClient() {
-    return WebClient.builder()
-            ...
-            .baseUrl(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
-            .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
-            .build();
-}
+WebClient spcdeInfoServiceWebClient(){
+        return WebClient.builder()
+        ...
+        .baseUrl(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
+        .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
+        .build();
+        }
 ```
 
-Get `@Autowired` with an instance of `SpcdeInfoServiceReactiveClient` which is internally get autowired with the `WebClient` instance.
+Get `@Autowired` with an instance of `SpcdeInfoServiceReactiveClient` which is internally get autowired with
+the `WebClient` instance.
 
 ```java
 @Autowired
 private SpcdeInfoServiceReactiveClient client;
 ```
 
-
 [RestTemplate]: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/client/RestTemplate.html
+
 [WebClient]: https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/function/client/WebClient.html
