@@ -26,7 +26,7 @@ import java.util.Objects;
 @Slf4j
 public class Response implements Serializable {
 
-    private static final long serialVersionUID = -383243653796767676L;
+    private static final long serialVersionUID = -1822721455568131571L;
 
     // ---------------------------------------------------------------------------------------------------- constructors
 

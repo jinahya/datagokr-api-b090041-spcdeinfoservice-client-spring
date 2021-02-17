@@ -8,7 +8,7 @@ import static java.util.Objects.requireNonNull;
  * @param <T> subclass type parameter
  * @author Jin Kwon &lt;onacit_at_gmail.com&gt;
  */
-abstract class AbstractLrsrCldInfoServiceClientTest<T extends AbstractSpcdeInfoServiceClient> {
+abstract class AbstractSpcdeInfoServiceClientTest<T extends AbstractSpcdeInfoServiceClient> {
 
     /**
      * Creates a new instance with specified client class.
@@ -16,7 +16,7 @@ abstract class AbstractLrsrCldInfoServiceClientTest<T extends AbstractSpcdeInfoS
      * @param clientClass the client class.
      * @see #clientClass
      */
-    AbstractLrsrCldInfoServiceClientTest(final Class<T> clientClass) {
+    AbstractSpcdeInfoServiceClientTest(final Class<T> clientClass) {
         super();
         this.clientClass = requireNonNull(clientClass, "clientClass is null");
     }

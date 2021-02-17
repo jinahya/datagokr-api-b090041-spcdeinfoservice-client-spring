@@ -38,7 +38,7 @@ import static java.util.Comparator.comparing;
 @Slf4j
 public class Item implements Serializable {
 
-    private static final long serialVersionUID = -4071620406720872635L;
+    private static final long serialVersionUID = 142085981070786610L;
 
     // ----------------------------------------------------------------------------------------------------- comparators
 

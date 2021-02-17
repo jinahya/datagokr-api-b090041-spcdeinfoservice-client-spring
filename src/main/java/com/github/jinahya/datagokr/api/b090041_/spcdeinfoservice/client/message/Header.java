@@ -25,7 +25,7 @@ import java.util.Objects;
 @Slf4j
 public class Header implements Serializable {
 
-    private static final long serialVersionUID = -3266148101861301931L;
+    private static final long serialVersionUID = 6787652066633648512L;
 
     // ------------------------------------------------------------------------------------------------------- constants
 
