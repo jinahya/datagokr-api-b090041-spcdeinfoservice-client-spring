@@ -1,13 +1,13 @@
-# b090041-lrsrcldinfoservice-client-spring
+# b090041-spcdeinfoservice-client-spring
 
-[![Java CI with Maven](https://github.com/jinahya/datagokr-api-b090041-lrsrcldinfoservice-client-spring/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/jinahya/datagokr-api-b090041-lrsrcldinfoservice-client-spring/actions)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jinahya_datagokr-api-b090041-lrsrcldinfoservice-client-spring&metric=alert_status)](https://sonarcloud.io/dashboard?id=jinahya_datagokr-api-b090041-lrsrcldinfoservice-client-spring)
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.jinahya/datagokr-api-b090041-lrsrcldinfoservice-client-spring)](https://search.maven.org/search?q=a:datagokr-api-b090041-lrsrcldinfoservice-client-spring)
-[![javadoc](https://javadoc.io/badge2/com.github.jinahya/datagokr-api-b090041-lrsrcldinfoservice-client-spring/javadoc.svg)](https://javadoc.io/doc/com.github.jinahya/datagokr-api-b090041-lrsrcldinfoservice-client-spring)
+[![Java CI with Maven](https://github.com/jinahya/datagokr-api-b090041-spcdeinfoservice-client-spring/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/jinahya/datagokr-api-b090041-spcdeinfoservice-client-spring/actions)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=jinahya_datagokr-api-b090041-spcdeinfoservice-client-spring&metric=alert_status)](https://sonarcloud.io/dashboard?id=jinahya_datagokr-api-b090041-spcdeinfoservice-client-spring)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.jinahya/datagokr-api-b090041-spcdeinfoservice-client-spring)](https://search.maven.org/search?q=a:datagokr-api-b090041-spcdeinfoservice-client-spring)
+[![javadoc](https://javadoc.io/badge2/com.github.jinahya/datagokr-api-b090041-spcdeinfoservice-client-spring/javadoc.svg)](https://javadoc.io/doc/com.github.jinahya/datagokr-api-b090041-spcdeinfoservice-client-spring)
 
 A client library for accessing http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService.
 
-See [음양력 정보 (data.go.kr)](https://www.data.go.kr/data/15012679/openapi.do).
+See [특일 정보 (data.go.kr)](https://www.data.go.kr/data/15012690/openapi.do).
 
 ## Verify
 
@@ -23,20 +23,20 @@ $ mvn -Pfailsafe -DservcieKey=... clean verify
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
-|`@LrsrCldInfoServiceServiceKey`|`java.lang.String`|Provided by the service provider|
+|`@SpcdeInfoServiceServiceKey`|`java.lang.String`|Provided by the service provider|
 
 ### For `RestTemplate`
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
-|`@LrsrCldInfoServiceRestTemplate`|[`RestTemplate`][RestTemplate]||
-|`@LrsrCldInfoServiceRestTemplateRootUri`|`j.l.String`|Optional|
+|`@SpcdeInfoServiceRestTemplate`|[`RestTemplate`][RestTemplate]||
+|`@SpcdeInfoServiceRestTemplateRootUri`|`j.l.String`|Optional|
 
 ### For `WebClient`
 
 |Qualifier|Type|Notes|
 |---------|----|-----------|
-|`@LrsrCldInfoServiceWebClient`|[`WebClient`][WebClient]||
+|`@SpcdeInfoServiceWebClient`|[`WebClient`][WebClient]||
 
 ## Usages
 
@@ -59,9 +59,9 @@ Provide the service key assigned by the service provider. Note that the service 
 value. You should use a URL-decoded value.
 
 ```java
-@AbstractLrsrCldInfoServiceClient.LrsrCldInfoServiceServiceKey
+@AbstractSpcdeInfoServiceClient.SpcdeInfoServiceServiceKey
 @Bean
-String lrsrCldInfoServiceServiceKey(){
+String spcdeInfoServiceServiceKey(){
     // The service key assigned by data.go.kr
     // Might be already URL-encoded
     // Use a URL-decoded value    
@@ -75,23 +75,23 @@ String lrsrCldInfoServiceServiceKey(){
 Provide an instance of `RestTemplate`.
 
 ```java
-@LrsrCldInfoServiceRestTemplate
+@SpcdeInfoServiceRestTemplate
 @Bean
-RestTemplate lrsrCldInfoServiceRestTemplate() {
+RestTemplate spcdeInfoServiceRestTemplate() {
     return new RestTemplateBuilder()
             ...
-            .rootUri(AbstractLrsrCldInfoServiceClient.BASE_URL_PRODUCTION)
+            .rootUri(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
             .build();
 }
 ```
 
-Get `@Autowired` with an instance of `LrsrCldInfoServiceClient` which is internally get autowired with
+Get `@Autowired` with an instance of `SpcdeInfoServiceClient` which is internally get autowired with
 the `RestTemplate` instance.
 
 ```java
 @Autowired
-private LrsrCldInfoServiceClient client;
+private SpcdeInfoServiceClient client;
 ```
 
 ### Using `WebClient`
@@ -99,22 +99,22 @@ private LrsrCldInfoServiceClient client;
 Provide an instance of `WebClient`.
 
 ```java
-@LrsrCldInfoServiceWebClient
+@SpcdeInfoServiceWebClient
 @Bean
-WebClient lrsrCldInfoServiceWebClient() {
+WebClient spcdeInfoServiceWebClient() {
     return WebClient.builder()
             ...
-            .baseUrl(AbstractLrsrCldInfoServiceClient.BASE_URL_PRODUCTION)
+            .baseUrl(AbstractSpcdeInfoServiceClient.BASE_URL_PRODUCTION)
             .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_XML_VALUE)
             .build();
 }
 ```
 
-Get `@Autowired` with an instance of `LrsrCldInfoServiceReactiveClient` which is internally get autowired with the `WebClient` instance.
+Get `@Autowired` with an instance of `SpcdeInfoServiceReactiveClient` which is internally get autowired with the `WebClient` instance.
 
 ```java
 @Autowired
-private LrsrCldInfoServiceReactiveClient client;
+private SpcdeInfoServiceReactiveClient client;
 ```
 
 
