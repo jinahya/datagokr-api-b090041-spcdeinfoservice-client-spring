@@ -26,7 +26,6 @@ class SpcdeInfoServiceReactiveClient_get24DivisionsInfo_IT extends SpcdeInfoServ
         final Year solYear = Year.from(yearMonth);
         final Item last = clientInstance().get24DivisionsInfo(solYear, solMonth)
                 .doOnNext(i -> {
-                    log.debug("item: {}", i);
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                         assertThat(d.getMonth()).isSameAs(solMonth);
@@ -42,7 +41,6 @@ class SpcdeInfoServiceReactiveClient_get24DivisionsInfo_IT extends SpcdeInfoServ
         final Year solYear = Year.now();
         final Item last = clientInstance().get24DivisionsInfo(solYear, null)
                 .doOnNext(i -> {
-                    log.debug("item: {}", i);
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                     });

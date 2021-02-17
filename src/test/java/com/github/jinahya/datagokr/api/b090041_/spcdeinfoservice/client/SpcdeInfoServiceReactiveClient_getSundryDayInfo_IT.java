@@ -26,9 +26,6 @@ class SpcdeInfoServiceReactiveClient_getSundryDayInfo_IT extends SpcdeInfoServic
         final Year solYear = Year.from(yearMonth);
         final Item last = clientInstance().getSundryDayInfo(solYear, solMonth)
                 .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
-                .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                         assertThat(d.getMonth()).isSameAs(solMonth);
@@ -44,9 +41,6 @@ class SpcdeInfoServiceReactiveClient_getSundryDayInfo_IT extends SpcdeInfoServic
     void getSundryDayInfo_Expected_Year() {
         final Year solYear = Year.now();
         final Item last = clientInstance().getSundryDayInfo(solYear, null)
-                .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
                 .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);

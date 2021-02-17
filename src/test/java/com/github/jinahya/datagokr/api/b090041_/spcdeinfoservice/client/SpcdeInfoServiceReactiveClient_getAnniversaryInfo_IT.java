@@ -26,9 +26,6 @@ class SpcdeInfoServiceReactiveClient_getAnniversaryInfo_IT extends SpcdeInfoServ
         final Year solYear = Year.from(yearMonth);
         final Item last = clientInstance().getAnniversaryInfo(solYear, solMonth)
                 .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
-                .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                         assertThat(d.getMonth()).isSameAs(solMonth);
@@ -43,9 +40,6 @@ class SpcdeInfoServiceReactiveClient_getAnniversaryInfo_IT extends SpcdeInfoServ
     void getAnniversaryInfo_Expected_Year() {
         final Year solYear = Year.now();
         final Item last = clientInstance().getAnniversaryInfo(solYear, null)
-                .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
                 .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);

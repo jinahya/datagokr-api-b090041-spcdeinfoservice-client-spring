@@ -26,9 +26,6 @@ class SpcdeInfoServiceReactiveClient_getRestDeInfo_IT extends SpcdeInfoServiceRe
         final Year solYear = Year.from(yearMonth);
         final Item last = clientInstance().getRestDeInfo(solYear, solMonth)
                 .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
-                .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);
                         assertThat(d.getMonth()).isSameAs(solMonth);
@@ -44,9 +41,6 @@ class SpcdeInfoServiceReactiveClient_getRestDeInfo_IT extends SpcdeInfoServiceRe
     void getRestDeInfo_Expected_Year() {
         final Year solYear = Year.now();
         final Item last = clientInstance().getRestDeInfo(solYear, null)
-                .doOnNext(i -> {
-                    log.debug("item: {}", i);
-                })
                 .doOnNext(i -> {
                     assertThat(i.getLocdate()).isNotNull().satisfies(d -> {
                         assertThat(Year.from(d)).isEqualTo(solYear);

@@ -31,7 +31,6 @@ class Response_Json_Test {
         final ObjectMapper mapper = new ObjectMapper();
         mapper.registerModules(new ParameterNamesModule(), new Jdk8Module(), new JavaTimeModule());
         final String string = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(expected);
-        log.debug("string: {}", string);
         final Response actual = mapper.readValue(string, Response.class);
         assertThat(actual).isEqualTo(expected);
     }
