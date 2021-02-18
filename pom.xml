@@ -217,9 +217,11 @@
           <configuration>
             <source>${project.build.directory}delombok</source>
             <links>
-              <link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
+              <link>https://docs.spring.io/spring-framework/docs/current/javadocs-api/</link>
               <link>https://docs.spring.io/spring-framework/docs/${version.org.springframework}/javadoc-api/</link>
               <link>https://javadoc.io/doc/jakarta.annotation/jakarta.annotation-api/${version.jakarta.annotation-api}/</link>
+<!--              <link>https://javadoc.io/doc/jakarta.persistence/jakarta.persistence-api/${version.jakarta.persistence-api}/</link>-->
+              <link>https://javadoc.io/doc/jakarta.persistence/jakarta.persistence-api/2.2.1/</link>
               <link>https://javadoc.io/doc/jakarta.validation/jakarta.validation-api/${version.jakarta.validation-api}/</link>
             </links>
           </configuration>
