@@ -37,12 +37,12 @@ class SpcdeInfoServiceReactiveClient_WithoutWebClientAutowired_IT
         }
     }
 
-    @Test
-    void clientInstance__() {
-        assertThat(clientInstance()).isNotNull();
-    }
-
     SpcdeInfoServiceReactiveClient_WithoutWebClientAutowired_IT() {
         super(SpcdeInfoServiceReactiveClient.class);
+    }
+
+    @Test
+    void clientInstanceWebClient_NonNull_() {
+        assertThat(clientInstance().webClient()).isNotNull();
     }
 }

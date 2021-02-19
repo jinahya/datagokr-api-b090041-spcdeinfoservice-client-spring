@@ -38,13 +38,13 @@ class SpcdeInfoServiceClient_WithoutRestTemplateAutowired_IT
     }
 
     @Test
-    void clientInstance_NonNull_() {
-        assertThat(clientInstance()).isNotNull();
+    void clientInstanceRestTemplate_NonNull_() {
+        assertThat(clientInstance().restTemplate()).isNotNull();
     }
 
     @Test
-    void clientInstanceRestTemplateRootUri_NonEmpty_() {
-        assertThat(clientInstance().restTemplateRootUri()).isNotEmpty();
+    void clientInstanceRestTemplateRootUri_NonBlank_() {
+        assertThat(clientInstance().restTemplateRootUri()).isNotBlank();
     }
 
     SpcdeInfoServiceClient_WithoutRestTemplateAutowired_IT() {
